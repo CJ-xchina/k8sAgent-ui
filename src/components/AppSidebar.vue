@@ -3,11 +3,11 @@
     <aside class="sidebar">
     <div class="description">You can drag these nodes to the pane.</div>
     <div class="nodes">
-      <div class="vue-flow__node-input" :draggable="true" @dragstart="onDragStart($event, 'input')">Input Node</div>
+      <div class="vue-flow__node-input" :draggable="true" @dragstart="onDragStart($event, 'input')">开始节点</div>
 
-      <div class="vue-flow__node-default" :draggable="true" @dragstart="onDragStart($event, 'default')">Default Node</div>
+      <div class="vue-flow__node-default" :draggable="true" @dragstart="onDragStart($event, 'default')">中间节点</div>
 
-      <div class="vue-flow__node-output" :draggable="true" @dragstart="onDragStart($event, 'output')">Output Node</div>
+      <div class="vue-flow__node-output" :draggable="true" @dragstart="onDragStart($event, 'output')">结束节点</div>
     </div>
   </aside>
   </div>
@@ -28,9 +28,8 @@ const { onDragStart } = useDragAndDrop()
 
 /* 设置 aside 元素在左侧，宽度固定 */
 .sidebar {
-  width: 100%;
-  height: 100%;
-  padding: 20px;
+  width: 90%;
+  height: 96.9%;
   border-right: 1px solid #ccc;
 }
 
@@ -51,5 +50,6 @@ const { onDragStart } = useDragAndDrop()
 .left-sidebar-container {
   height: 100%;
   width: 10%;
+  margin: 0;
 }
 </style>

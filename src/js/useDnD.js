@@ -89,7 +89,7 @@ export default function useDragAndDrop() {
       id: nodeId,
       type: draggedType.value,
       position,
-      data: { label: nodeId },
+      data: { question: nodeId },
     }
 
     /**
@@ -118,3 +118,4 @@ export default function useDragAndDrop() {
     onDrop,
   }
 }
+
