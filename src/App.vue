@@ -1,5 +1,6 @@
 <template>
   <div class="dnd-flow" @drop="onDrop">
+    <Sidebar/>
     <VueFlow :nodes="nodes" :edges="edges" :apply-default="false" fit-view-on-init class="confirm-flow"
              @dragover="onDragOver" @dragleave="onDragLeave">
       <DropzoneBackground
@@ -15,13 +16,18 @@
       <Background/>
       <Dialog/>
     </VueFlow>
-    <Sidebar/>
+    <!-- 拖动条 -->
+    <div class="divider" @mousedown="startDragging"></div>
+
+    <!-- 右侧的 Sidebar -->
+    <RightSidebar :nodes="nodes" :style="{ width: rightSidebarWidth + 'px' }" @start-analysis="startAnalysis" />
   </div>
 </template>
 
 
 <script setup>
 import {h, ref} from 'vue'
+import RightSidebar from './components/RightSidebar.vue'
 import {useVueFlow, VueFlow} from '@vue-flow/core'
 import {Background} from '@vue-flow/background'
 import DropzoneBackground from './components/DropzoneBackgournd.vue'
@@ -30,19 +36,43 @@ import Dialog from './components/DeleteDialog.vue'
 import {useDialog} from './js/useDialog'
 import useDragAndDrop from './js/useDnD'
 import SaveRestoreControls from './components/ControlUpdate.vue'
-import { MiniMap } from '@vue-flow/minimap'
-
-
+import {MiniMap} from '@vue-flow/minimap'
 const dialog = useDialog()
 const {onConnect, addEdges, onNodesChange, onEdgesChange, applyNodeChanges, applyEdgeChanges} = useVueFlow()
 const {onDragOver, onDrop, onDragLeave, isDragOver} = useDragAndDrop()
+
+
 
 const nodes = ref([
   {id: '1', type: 'input', data: {label: 'Click me and'}, position: {x: 0, y: 0}},
   {id: '2', data: {label: `press 'Backspace' to delete me`}, position: {x: 0, y: 100}},
 ])
-
 const edges = ref([{id: 'e1-2', source: '1', target: '2'}])
+const rightSidebarWidth = ref(300)  // 右侧栏的初始宽度
+// 拖动逻辑
+let isDragging = false
+
+function startDragging(event) {
+  isDragging = true
+  console.log("dragging!")
+  document.addEventListener('mousemove', resizeSidebar)
+  document.addEventListener('mouseup', stopDragging)
+}
+
+function resizeSidebar(event) {
+  if (isDragging) {
+    const newWidth = window.innerWidth - event.clientX
+    rightSidebarWidth.value = Math.min(Math.max(newWidth, 200), 1000)
+  }
+}
+
+function stopDragging() {
+  isDragging = false
+  document.removeEventListener('mousemove', resizeSidebar)
+  document.removeEventListener('mouseup', stopDragging)
+}
+
+
 
 function dialogMsg(id) {
   return h(
@@ -57,6 +87,10 @@ function dialogMsg(id) {
       },
       [`Are you sure?`, h('br'), h('span', `[ELEMENT_ID: ${id}]`)],
   )
+}
+
+function startAnalysis() {
+  alert('Analysis Started!')
 }
 
 onConnect(addEdges)
@@ -111,6 +145,10 @@ onEdgesChange(async (changes) => {
   color: #2c3e50;
 }
 
+.divider {
+  width: 10px;
+  background: #2c3e50;
+}
 nav {
   padding: 30px;
 }
