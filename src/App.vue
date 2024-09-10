@@ -69,6 +69,7 @@ import CustomEdge from "@/components/edges/CustomEdge.vue";
 import DefaultNode from "@/components/nodes/DefaultNode.vue";
 import inputNode from "@/components/nodes/InputNode.vue";
 import outputNode from "@/components/nodes/OutputNode.vue";
+import {deleteNodeAndEdges} from "@/js/vue-flow-utils";
 
 const dialog = useDialog()
 const {addEdges, onNodesChange, onEdgesChange, applyNodeChanges, applyEdgeChanges, updateEdge} = useVueFlow()
@@ -199,11 +200,14 @@ function startAnalysis() {
 onNodesChange(async (changes) => {
   const nextChanges = []
 
+  console.log(changes)
   for (const change of changes) {
     if (change.type === 'remove') {
       const isConfirmed = await dialog.confirm(dialogMsg(change.id))
 
       if (isConfirmed) {
+        deleteNodeAndEdges(nodes, edges, change.id)
+
         nextChanges.push(change)
       }
     } else {
