@@ -1,6 +1,4 @@
 <template>
-  <el-header class="header" style="width: 100%">
-
     <div class="head-bar-container">
       <!-- 节点创建工具栏 -->
       <div class="nodes-tool-kit">
@@ -33,7 +31,6 @@
         <el-button type="primary" @click="startAnalyze">Start Analyze</el-button>
       </div>
     </div>
-  </el-header>
 
 </template>
 
