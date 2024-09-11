@@ -15,6 +15,6 @@ export function updateUser(id, data) {
   return service.put(`/user/update/${id}`, data);
 }
 
-export async function getPodDetails() {
+export function getPodDetails() {
   return service.get("/getPodDetails");
 }

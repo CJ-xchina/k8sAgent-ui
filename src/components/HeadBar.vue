@@ -1,49 +1,50 @@
 <template>
-    <div class="head-bar-container">
-      <!-- 节点创建工具栏 -->
-      <div class="nodes-tool-kit">
-        <div class="vue-flow__node-input" :draggable="true" @dragstart="onDragStart($event, 'input')">开始节点</div>
-        <div class="vue-flow__node-default" :draggable="true" @dragstart="onDragStart($event, 'default')">中间节点</div>
-        <div class="vue-flow__node-output" :draggable="true" @dragstart="onDragStart($event, 'output')">结束节点</div>
-      </div>
+  <div class="head-bar-container">
+    <!-- 节点创建工具栏 -->
+    <div class="nodes-tool-kit">
+      <div class="vue-flow__node-input" :draggable="true" @dragstart="onDragStart($event, 'input')">开始节点</div>
+      <div class="vue-flow__node-default" :draggable="true" @dragstart="onDragStart($event, 'default')">中间节点</div>
+      <div class="vue-flow__node-output" :draggable="true" @dragstart="onDragStart($event, 'output')">结束节点</div>
+    </div>
 
-      <!-- 文件工具栏部分 -->
-      <div class="file-tool-kit">
-        <div class="buttons">
-          <button class="tool-button" title="保存" @click="onSave">
-            <Icon name="save"/>
-            保存
-          </button>
-          <button class="tool-button" title="restore graph" @click="onRestore">
-            <Icon name="restore"/>
-            恢复
-          </button>
-          <button class="tool-button" title="从文件中导入图" @click="importJson">
-            <Icon name="add"/>
-            导入
-          </button>
-          <input type="file" ref="fileInput" accept=".json" style="display:none" @change="onFileChange"/>
-        </div>
-      </div>
-
-      <!-- 操作工具栏 -->
-      <div class="operation-tool-kit">
-        <el-button type="primary" @click="startAnalyze">Start Analyze</el-button>
+    <!-- 文件工具栏部分 -->
+    <div class="file-tool-kit">
+      <div class="buttons">
+        <button class="tool-button" title="保存" @click="onSave">
+          <Icon name="save" />
+          保存
+        </button>
+        <button class="tool-button" title="restore graph" @click="onRestore">
+          <Icon name="restore" />
+          恢复
+        </button>
+        <button class="tool-button" title="从文件中导入图" @click="importJson">
+          <Icon name="add" />
+          导入
+        </button>
+        <input type="file" ref="fileInput" accept=".json" style="display: none" @change="onFileChange" />
       </div>
     </div>
 
+    <!-- 操作工具栏 -->
+    <div class="operation-tool-kit">
+      <el-button type="primary" @click="startAnalysis">开始分析</el-button>
+    </div>
+  </div>
 </template>
 
-<script lang="js" setup>
+<script setup>
 import useDragAndDrop from '../js/useDnD'
 import Icon from './Icon.vue'
-import {ref} from 'vue'
-import {ElMessage} from 'element-plus'
-import {useVueFlow} from '@vue-flow/core'
-import {ElButton} from 'element-plus'  // 引入 Element Plus 的按钮组件
+import { ref } from 'vue'
+import { ElMessage } from 'element-plus'
+import { useVueFlow } from '@vue-flow/core'
+import { defineEmits } from 'vue' // Import defineEmits if not yet imported
 
-const {onDragStart} = useDragAndDrop()
-const {addNodes, addEdges, toObject, fromObject} = useVueFlow()
+const { onDragStart } = useDragAndDrop()
+const { addNodes, addEdges, toObject, fromObject } = useVueFlow()
+
+const emit = defineEmits(['start-analysis']) // Define the emits
 
 const fileInput = ref(null)
 const importedFileName = ref("graph.json")
@@ -83,18 +84,25 @@ function onFileChange(event) {
 
 // 文件保存方法
 function saveAsNewFile(data, fileName) {
-  const blob = new Blob([data], {type: 'application/json'})
+  const blob = new Blob([data], { type: 'application/json' })
   const link = document.createElement('a')
   link.href = URL.createObjectURL(blob)
   link.download = fileName
   link.click()
 }
 
-// 开始分析功能
-function startAnalyze() {
-  ElMessage.success('Analyze started!')
+// 开始分析的逻辑，通过 $emit 通知父组件
+function startAnalysis() {
+  ElMessage({
+    message: '准备开始分析...',
+    type: 'info',
+  });
+
+  // 发射 start-analysis 事件，通知父组件
+  emit('start-analysis');
 }
 </script>
+
 
 <style scoped>
 .head-bar-container {
@@ -104,7 +112,9 @@ function startAnalyze() {
 }
 
 /* 横向排列工具栏和按钮 */
-.nodes-tool-kit, .file-tool-kit, .operation-tool-kit {
+.nodes-tool-kit,
+.file-tool-kit,
+.operation-tool-kit {
   display: flex;
   align-items: center;
   gap: 10px; /* 工具之间的间距 */
