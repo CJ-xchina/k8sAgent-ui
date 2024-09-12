@@ -96,6 +96,7 @@ const addCategory = (category) => {
 // Add a new flow under a specific category
 const addFlow = (categoryId, flowData) => {
   const category = treeData.value.find(node => node.id === categoryId)
+  selectedGraphId.value = flowData.id
   if (category) {
     category.children.push(flowData)
   }
