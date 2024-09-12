@@ -1,5 +1,5 @@
-import { useVueFlow } from '@vue-flow/core'
-import { ref, watch } from 'vue'
+import {useVueFlow} from '@vue-flow/core'
+import {ref, watch} from 'vue'
 
 let id = 0
 
@@ -23,10 +23,10 @@ const state = {
   isDragging: ref(false),
 }
 
-export default function useDragAndDrop() {
+export default function useDragAndDrop(flow_id) {
   const { draggedType, isDragOver, isDragging } = state
 
-  const { addNodes, screenToFlowCoordinate, onNodesInitialized, updateNode } = useVueFlow()
+  const {addNodes, screenToFlowCoordinate, onNodesInitialized, updateNode} = useVueFlow(flow_id)
 
   watch(isDragging, (dragging) => {
     document.body.style.userSelect = dragging ? 'none' : ''
@@ -105,6 +105,7 @@ export default function useDragAndDrop() {
       off()
     })
 
+    console.log("add!")
     addNodes(newNode)
   }
 

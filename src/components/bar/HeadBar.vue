@@ -42,17 +42,15 @@ import { useVueFlow } from '@vue-flow/core'
 import { defineEmits } from 'vue' // Import defineEmits if not yet imported
 
 const { onDragStart } = useDragAndDrop()
-const { toObject, fromObject } = useVueFlow(1)
 
-const emit = defineEmits(['start-analysis']) // Define the emits
+const emit = defineEmits(['start-analysis', 'save-project', 'load-project']) // Define the emits
 
 const fileInput = ref(null)
 const importedFileName = ref("graph.json")
 
 // 保存功能
 function onSave() {
-  const data = JSON.stringify(toObject())
-  saveAsNewFile(data, importedFileName.value)
+  emit("save-project")
 }
 
 // 恢复功能
@@ -71,14 +69,21 @@ function importJson() {
 }
 
 function onFileChange(event) {
+  console.log("content");
   const file = event.target.files[0]
+  console.log(file)
   if (file) {
     const reader = new FileReader()
     reader.onload = (e) => {
-      const content = e.target.result
-      fromObject(JSON.parse(content))
+      console.log(e)
+      const content = e.target.result;
+      console.log("content");
+      console.log(content)
+      emit("load-project", content)
+
     }
-    reader.readAsText(file)
+    reader.readAsText(file);
+
   }
 }
 
