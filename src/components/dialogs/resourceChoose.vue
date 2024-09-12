@@ -57,6 +57,8 @@ watch(() => props.DialogVisible, (newValue) => {
 // 获取 Pods 数据
 const fetchPods = () => {
   getPodDetails().then((response) => {
+    console.log()
+    console.log(response)
     resourceList.value = response.map(pod => ({
       name: pod.name,
       namespace: pod.namespace,
