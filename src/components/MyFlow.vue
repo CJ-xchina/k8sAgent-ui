@@ -11,8 +11,8 @@
       :nodeTypes="{ default: DefaultNode, input: inputNode, output: outputNode }"
       @edge-update="onEdgeUpdate"
       @connect="onConnect"
-        :class="{ dark }"
-        :default-viewport="{ zoom: 1.5 }"
+      :class="{ dark }"
+      :default-viewport="{ zoom: 1.5 }"
     >
       <DropzoneBackground
         :style="{
@@ -48,7 +48,7 @@
       <Dialog />
     </VueFlow>
     <!-- 当选中节点时显示 NodeDetailsDialog -->
-    <NodeDetailsDialog :node="selectedNode" @close="clearSelectedNode"/>
+    <NodeDetailsDialog :node="selectedNode" :id="props.id" @close="clearSelectedNode"/>
   </el-main>
 </template>
 

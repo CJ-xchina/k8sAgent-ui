@@ -42,11 +42,11 @@ import {computed, ref, shallowRef, watch} from 'vue'
 import {useVueFlow} from '@vue-flow/core'
 import {ElMessage} from 'element-plus'
 
-const {getConnectedEdges, findNode, updateEdgeData, updateNode} = useVueFlow()
 
 // 接收传入的节点信息
 const props = defineProps({
-  node: Object // 通过父组件传递的节点
+  node: Object, // 通过父组件传递的节点,
+  id: String
 })
 
 // 使用 shallowRef 确保引用关系，而不会发生空引用问题
@@ -70,6 +70,8 @@ watch(() => props.node, (newNode) => {
     // 保存初始数据的深拷贝
     initialData.value = JSON.parse(JSON.stringify(newNode.data))
 
+    const {getConnectedEdges} = useVueFlow(props.id);
+    
     // 初始化 edgeLabels 数据
     const edges = getConnectedEdges(newNode.id)
     edges.forEach(edge => {
@@ -100,20 +102,25 @@ const outgoingEdges = computed(() => {
   if (!node.value || !node.value.id) {
     return [] // 如果 node 为空或没有 id，返回空数组
   }
+  const {getConnectedEdges } = useVueFlow(props.id)
+
   const edges = getConnectedEdges(node.value.id)  // 从 VueFlow 获取所有边
   return edges.filter(edge => edge.source === node.value?.id)
 })
 
 // 查找目标节点的 question 信息，并检查目标节点是否存在
 function getTargetQuestion(targetId) {
+  const {findNode} = useVueFlow(props.id)
+
   const targetNode = findNode(targetId)
   return targetNode?.data?.question || 'No question found'
 }
 
 // 更新 edge label
 function updateEdgeLabel(edge) {
+  const {updateEdgeData} = useVueFlow(props.id)
+
   const newLabel = edgeLabels.value[edge.id]
-  console.log('Updating edge:', edge.id, 'with label:', newLabel)
 
   // 使用 UpdateEdgeData 更新边的数据，仅更新 label 字段
   updateEdgeData(edge.id, {label: newLabel}, {replace: true})
@@ -125,6 +132,8 @@ function updateEdgeLabel(edge) {
 // 提交修改后的节点数据
 function submitChanges() {
   if (node.value) {
+    const {updateNode} = useVueFlow(props.id)
+
     // 使用 updateNode 更新节点信息
     updateNode(node.value.id, {data: node.value.data})
     ElMessage.success('节点信息更新成功!')
