@@ -34,15 +34,15 @@
 </template>
 
 <script setup>
-import useDragAndDrop from '../js/useDnD'
-import Icon from './Icon.vue'
+import useDragAndDrop from '../../js/useDnD'
+import Icon from '../Icon.vue'
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useVueFlow } from '@vue-flow/core'
 import { defineEmits } from 'vue' // Import defineEmits if not yet imported
 
 const { onDragStart } = useDragAndDrop()
-const { addNodes, addEdges, toObject, fromObject } = useVueFlow()
+const { toObject, fromObject } = useVueFlow(1)
 
 const emit = defineEmits(['start-analysis']) // Define the emits
 
