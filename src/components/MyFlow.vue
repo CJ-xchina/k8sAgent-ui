@@ -3,7 +3,7 @@
     <VueFlow
         :key="props.id" :id="props.id"
       fit-view-on-init
-      class="confirm-flow"
+        class="confirm-flow, basic-flow"
       @dragover="onDragOver"
       @dragleave="onDragLeave"
       @nodeDoubleClick="selectNode"
@@ -11,6 +11,8 @@
       :nodeTypes="{ default: DefaultNode, input: inputNode, output: outputNode }"
       @edge-update="onEdgeUpdate"
       @connect="onConnect"
+        :class="{ dark }"
+        :default-viewport="{ zoom: 1.5 }"
     >
       <DropzoneBackground
         :style="{
@@ -22,6 +24,26 @@
       </DropzoneBackground>
 
       <MiniMap />
+
+      <Controls position="top-center">
+        <ControlButton title="Reset Transform" @click="resetTransform">
+          <Icon name="reset"/>
+        </ControlButton>
+
+        <ControlButton title="Shuffle Node Positions" @click="updatePos">
+          <Icon name="update"/>
+        </ControlButton>
+
+        <ControlButton title="Toggle Dark Mode" @click="toggleDarkMode">
+          <Icon v-if="dark" name="sun"/>
+          <Icon v-else name="moon"/>
+        </ControlButton>
+
+        <ControlButton title="Log `toObject`" @click="logToObject">
+          <Icon name="log"/>
+        </ControlButton>
+      </Controls>
+
       <Background />
       <Dialog />
     </VueFlow>
@@ -43,6 +65,8 @@ import CustomEdge from './edges/CustomEdge.vue'
 import DefaultNode from './nodes/DefaultNode.vue'
 import inputNode from './nodes/InputNode.vue'
 import outputNode from './nodes/OutputNode.vue'
+import {ControlButton, Controls} from '@vue-flow/controls'
+import Icon from "@/components/Icon.vue";
 
 const props = defineProps({
   id: {
@@ -152,11 +176,23 @@ function exportFlowData() {
     });
   });
 
-  console.log("final :");
-  console.log(flowDataMap)
+  // Check and remove keys that are not valid UUIDs
+  flowDataMap.forEach((value, key) => {
+    if (!isValidUUID(key)) {
+      flowDataMap.delete(key);
+    }
+  });
   return flowDataMap;
 }
 
+// Utility function to validate if a string is a valid UUID (version 4)
+function isValidUUID(uuid) {
+  if (uuid === undefined) {
+    return false
+  }
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+}
 // Function to import a flowDataMap (instead of loading from a file)
 function importFlowData(newFlowDataMap) {
   // Replace the current flowDataMap with the new one
@@ -174,6 +210,13 @@ function importFlowData(newFlowDataMap) {
   }
 }
 
+// our dark mode toggle flag
+const dark = ref(false)
+
+
+function toggleDarkMode() {
+  dark.value = !dark.value
+}
 
 // eslint-disable-next-line no-undef
 defineExpose({
@@ -183,12 +226,5 @@ defineExpose({
 </script>
 
 <style scoped>
-.main {
-  margin: 0;
-  padding: 0;
-}
 
-.vue-flow {
-  height: 100%;
-}
 </style>
