@@ -1,6 +1,6 @@
 <template>
   <div class="output-node">
-    <p>{{ data.action }}</p> <!-- 显示 question 字段 -->
+    <p>END</p> <!-- 显示 question 字段 -->
     <!-- Source handle at the bottom for outgoing connections -->
     <Handle id="output-left" type="target" :position="Position.Left" />
     <Handle id="output-right" type="target" :position="Position.Right" />

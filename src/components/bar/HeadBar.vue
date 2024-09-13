@@ -5,6 +5,8 @@
       <div class="vue-flow__node-input" :draggable="true" @dragstart="onDragStart($event, 'input')">开始节点</div>
       <div class="vue-flow__node-default" :draggable="true" @dragstart="onDragStart($event, 'default')">中间节点</div>
       <div class="vue-flow__node-output" :draggable="true" @dragstart="onDragStart($event, 'output')">结束节点</div>
+
+      <div class="vue-flow__node-output" :draggable="true" @dragstart="onDragStart($event, 'group')">结束节点</div>
     </div>
 
     <!-- 文件工具栏部分 -->
@@ -36,10 +38,8 @@
 <script setup>
 import useDragAndDrop from '../../js/useDnD'
 import Icon from '../Icon.vue'
-import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
-import { useVueFlow } from '@vue-flow/core'
-import { defineEmits } from 'vue' // Import defineEmits if not yet imported
+import {defineEmits, ref} from 'vue' // Import defineEmits if not yet imported
+import {ElMessage} from 'element-plus'
 
 const { onDragStart } = useDragAndDrop()
 

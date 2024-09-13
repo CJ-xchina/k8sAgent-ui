@@ -78,35 +78,64 @@ export default function useDragAndDrop(flow_id) {
    * @param {DragEvent} event
    */
   function onDrop(event) {
+    console.log("dropdrop")
     const position = screenToFlowCoordinate({
       x: event.clientX,
       y: event.clientY,
-    })
+    });
 
-    const nodeId = getId()
+    const nodeId = flow_id + getId();
+    let newNode;
 
-    const newNode = {
+    // 根据不同的拖拽类型设置节点的 data
+    if (draggedType.value === "group") {
+      // 推理组节点，包含 question 和 description
+      newNode = {
+        id: nodeId,
+        type: draggedType.value,
+        position,
+        data: {
+          question: "", // 默认空字符串
+          description: "", // 默认空字符串
+        },
+      };
+    } else if (draggedType.value === "default") {
+      // 中间节点，包含 regex、question、description 和 action
+      newNode = {
       id: nodeId,
       type: draggedType.value,
       position,
-      data: { question: nodeId },
+        data: {
+          regex: "", // 默认空字符串
+          question: "", // 默认空字符串
+          description: "", // 默认空字符串
+          action: "", // 默认空字符串
+        },
+      };
+    } else if (draggedType.value === "input" || draggedType.value === "output") {
+      // 开始节点和结束节点，data 为 undefined
+      newNode = {
+        id: nodeId,
+        type: draggedType.value,
+        position,
+        data: undefined, // 没有数据字段
+      };
     }
 
-    /**
-     * Align node position after drop, so it's centered to the mouse
-     *
-     * We can hook into events even in a callback, and we can remove the event listener after it's been called.
-     */
-    const { off } = onNodesInitialized(() => {
+    // 节点初始化后，调整节点位置，使其相对于鼠标居中
+    const {off} = onNodesInitialized(() => {
       updateNode(nodeId, (node) => ({
-        position: { x: node.position.x - node.dimensions.width / 2, y: node.position.y - node.dimensions.height / 2 },
-      }))
+        position: {
+          x: node.position.x - node.dimensions.width / 2,
+          y: node.position.y - node.dimensions.height / 2,
+        },
+      }));
 
-      off()
-    })
+      off(); // 移除事件监听器
+    });
 
-    console.log("add!")
-    addNodes(newNode)
+    console.log("Node added!");
+    addNodes(newNode); // 将新节点添加到流中
   }
 
   return {

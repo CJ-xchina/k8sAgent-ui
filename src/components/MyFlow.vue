@@ -8,7 +8,7 @@
       @dragleave="onDragLeave"
       @nodeDoubleClick="selectNode"
       :edgeTypes="{ default: CustomEdge }"
-      :nodeTypes="{ default: DefaultNode, input: inputNode, output: outputNode }"
+      :nodeTypes="{ default: DefaultNode, input: inputNode, output: outputNode, group: GroupNode }"
       @edge-update="onEdgeUpdate"
       @connect="onConnect"
       :class="{ dark }"
@@ -67,6 +67,7 @@ import inputNode from './nodes/InputNode.vue'
 import outputNode from './nodes/OutputNode.vue'
 import {ControlButton, Controls} from '@vue-flow/controls'
 import Icon from "@/components/Icon.vue";
+import GroupNode from "@/components/nodes/GroupNode.vue";
 
 const props = defineProps({
   id: {

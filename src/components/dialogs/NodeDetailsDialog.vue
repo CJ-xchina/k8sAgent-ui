@@ -4,16 +4,23 @@
     <div v-if="node">
       <p>ID: {{ node.id }}</p>
       <el-form :model="node.data" label-position="top">
-        <el-form-item label="Question">
+        <!-- Question 字段，所有节点都显示 -->
+        <el-form-item label="Question" v-if="node.data.question !== undefined">
           <el-input v-model="node.data.question" :disabled="!isEditable"></el-input>
         </el-form-item>
-        <el-form-item label="Action">
+
+        <!-- Action 字段，仅当 action 存在时显示 -->
+        <el-form-item label="Action" v-if="node.data.action !== undefined">
           <el-input v-model="node.data.action" :disabled="!isEditable"></el-input>
         </el-form-item>
-        <el-form-item label="Description">
+
+        <!-- Description 字段，所有节点都显示 -->
+        <el-form-item label="Description" v-if="node.data.description !== undefined">
           <el-input v-model="node.data.description" :disabled="!isEditable"></el-input>
         </el-form-item>
-        <el-form-item label="Regex">
+
+        <!-- Regex 字段，仅当 regex 存在时显示 -->
+        <el-form-item label="Regex" v-if="node.data.regex !== undefined">
           <el-input v-model="node.data.regex" :disabled="!isEditable"></el-input>
         </el-form-item>
       </el-form>
@@ -64,7 +71,10 @@ const edgeLabels = ref({})
 // 监控 props.node 的变化
 watch(() => props.node, (newNode) => {
   if (newNode) {
-    node.value = newNode // 更新 node 数据
+    if (newNode.data === undefined) {
+      return
+    }
+    node.value = newNode; // 更新 node 数据
     visible.value = true // 打开对话框
 
     // 保存初始数据的深拷贝

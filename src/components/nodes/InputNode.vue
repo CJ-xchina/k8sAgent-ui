@@ -1,6 +1,6 @@
 <template>
   <div class="input-node">
-    <p>{{ data.question }}</p> <!-- 显示 question 字段 -->
+    <p>START</p> <!-- 显示 question 字段 -->
     <!-- Source handle at the bottom for outgoing connections -->
     <Handle id="input_a" type="source" :position="Position.Left"/>
     <Handle id="input_b" type="source" :position="Position.Bottom"/>
