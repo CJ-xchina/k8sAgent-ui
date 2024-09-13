@@ -6,7 +6,7 @@
       <div class="vue-flow__node-default" :draggable="true" @dragstart="onDragStart($event, 'default')">中间节点</div>
       <div class="vue-flow__node-output" :draggable="true" @dragstart="onDragStart($event, 'output')">结束节点</div>
 
-      <div class="vue-flow__node-output" :draggable="true" @dragstart="onDragStart($event, 'group')">结束节点</div>
+      <div class="vue-flow__node-group" :draggable="true" @dragstart="onDragStart($event, 'group')">结束节点</div>
     </div>
 
     <!-- 文件工具栏部分 -->

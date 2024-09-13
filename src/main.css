@@ -77,3 +77,16 @@ body,
 .basic-flow.dark .vue-flow__edge-text {
     fill:#fffffb
 }
+
+
+.vue-flow__node-group {
+  z-index: 111;  /* Set a low z-index */
+}
+
+.vue-flow__node-default,
+.vue-flow__node-input,
+.vue-flow__node-output {
+  z-index: 1;  /* Set a higher z-index for other nodes */
+}
+
+

@@ -1,11 +1,12 @@
 <template>
-  <el-main class="main" @drop="onDrop_temp">
+  <el-main class="main" @drop="onDrop_temp" @dragover="onDragOver">
     <VueFlow
         :key="props.id" :id="props.id"
       fit-view-on-init
         class="confirm-flow, basic-flow"
-      @dragover="onDragOver"
       @dragleave="onDragLeave"
+        @node-drag="onNodeDrag"
+        @node-drag-start="onNodeDragStop"
       @nodeDoubleClick="selectNode"
       :edgeTypes="{ default: CustomEdge }"
       :nodeTypes="{ default: DefaultNode, input: inputNode, output: outputNode, group: GroupNode }"
@@ -85,7 +86,11 @@ const flowDataMap = new Map()
 const {onDragOver, onDragLeave, isDragOver, onDrop} = useDragAndDrop(props.id)
 
 let onDrop_temp = ref(onDrop)
+
+
 const selectedNode = ref(null)  // 添加 selectedNode
+let drapParentNode = ref(null);
+let foundIntering = ref(false)
 
 function onEdgeUpdate({edge, connection}) {
   const {updateEdge} = useVueFlow(props.id)
@@ -120,6 +125,54 @@ function clearSelectedNode() {
   selectedNode.value = null  // 关闭对话框时清除选中的节点
 }
 
+function onNodeDrag(event) {
+  // 获取 VueFlow 实例的方法
+  const {
+    getIntersectingNodes,
+    updateNode,
+    nodes
+  } = useVueFlow(props.id);
+
+  // 获取当前拖动的节点
+  const draggedNode = event.node;
+
+  if (draggedNode.type !== "default") {
+    return
+  }
+
+
+  // 获取与当前拖动节点相交的所有节点
+  const intersections = getIntersectingNodes(draggedNode);
+  const intersectionIds = intersections.map((node) => node.id);
+
+  drapParentNode = null; // 每次拖动时先清空
+  for (const node of nodes.value) {
+    if (node.type === "group") {
+      updateNode(node.id, {class: ''}); // 移除所有 group 节点的 intersecting 类
+    }
+  }
+  // 遍历所有节点，找到第一个与拖动节点相交的 group 节点
+  for (const node of nodes.value) {
+    if (draggedNode.parentNode !== node.id && node.type === "group") {
+      const isIntersecting = intersectionIds.includes(node.id);
+
+      if (isIntersecting) {
+        updateNode(node.id, {class: 'intersecting'}); // 仅为相交的 group 节点添加 intersecting 类
+        drapParentNode = node; // 保存相交的 group 节点
+        break; // 找到相交节点后立即退出循环
+      }
+    }
+  }
+
+}
+
+// 监听拖拽结束事件，使用 alert 显示信息
+// 监听拖拽结束事件，打印相交的节点信息
+function onNodeDragStop(event) {
+  const draggedNode = event.node;
+
+  console.log(drapParentNode)
+}
 // Watch for changes in 1 and save/load flow data dynamically
 watch(
     () => props.id,
@@ -226,6 +279,8 @@ defineExpose({
 });
 </script>
 
-<style scoped>
-
+<style>
+.vue-flow__node.intersecting {
+  background-color: #f15a16
+}
 </style>

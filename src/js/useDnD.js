@@ -78,7 +78,6 @@ export default function useDragAndDrop(flow_id) {
    * @param {DragEvent} event
    */
   function onDrop(event) {
-    console.log("dropdrop")
     const position = screenToFlowCoordinate({
       x: event.clientX,
       y: event.clientY,
