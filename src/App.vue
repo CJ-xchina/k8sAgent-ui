@@ -133,7 +133,6 @@ function saveFlowAndTreeToFile() {
   link.click();
 }
 
-
 // Function to load the flowDataMap and treeData from a JSON file
 function loadFlowAndTreeFromFile(text) {
 
@@ -147,6 +146,32 @@ function loadFlowAndTreeFromFile(text) {
   const newFlowDataMap = new Map(loadedData.flowDataMap);
   childFlow.value.importFlowData(newFlowDataMap)
 }
+
+
+
+
+
+// app.vue写在script里面  main.js写在app挂在完之后
+// app.vue写在script里面  main.js写在app挂在完之后
+const debounce = (fn, delay) => {
+  let timer
+   return (...args) => {
+     if (timer) {
+       clearTimeout(timer)
+     }
+     timer = setTimeout(() => {
+       fn(...args)
+     }, delay)
+   }
+}
+const _ResizeObserver = window.ResizeObserver;
+window.ResizeObserver = class ResizeObserver extends _ResizeObserver{
+   constructor(callback) {
+     callback = debounce(callback, 200);
+     super(callback);
+   }
+}
+
 
 // 添加新的类别
 </script>
