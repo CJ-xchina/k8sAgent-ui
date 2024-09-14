@@ -6,7 +6,7 @@
         class="confirm-flow, basic-flow"
       @dragleave="onDragLeave"
         @node-drag="onNodeDrag"
-        @node-drag-start="onNodeDragStop"
+        @node-drag-stop="onNodeDragStop"
       @nodeDoubleClick="selectNode"
       :edgeTypes="{ default: CustomEdge }"
       :nodeTypes="{ default: DefaultNode, input: inputNode, output: outputNode, group: GroupNode }"
@@ -89,11 +89,10 @@ let onDrop_temp = ref(onDrop)
 
 
 const selectedNode = ref(null)  // 添加 selectedNode
-let drapParentNode = ref(null);
-let foundIntering = ref(false)
+let dropParentNode = ref(null);
 
 function onEdgeUpdate({edge, connection}) {
-  const {updateEdge} = useVueFlow(props.id)
+  const {updateEdge,} = useVueFlow(props.id)
 
   updateEdge(edge, connection)
 }
@@ -136,42 +135,64 @@ function onNodeDrag(event) {
   // 获取当前拖动的节点
   const draggedNode = event.node;
 
-  if (draggedNode.type !== "default") {
-    return
-  }
+  // 仅处理 "default" 类型节点
+  if (draggedNode.type !== "default") return;
 
 
   // 获取与当前拖动节点相交的所有节点
   const intersections = getIntersectingNodes(draggedNode);
-  const intersectionIds = intersections.map((node) => node.id);
+  const intersectionIds = intersections.map(node => node.id);
 
-  drapParentNode = null; // 每次拖动时先清空
-  for (const node of nodes.value) {
+
+  dropParentNode = null; // 清空上次的相交父节点
+
+  // 遍历所有 "group" 类型节点，移除 "intersecting" 类
+  nodes.value.forEach(node => {
     if (node.type === "group") {
-      updateNode(node.id, {class: ''}); // 移除所有 group 节点的 intersecting 类
+      updateNode(node.id, {class: ''});
     }
-  }
-  // 遍历所有节点，找到第一个与拖动节点相交的 group 节点
+  });
+  // 查找第一个与拖动节点相交的 "group" 节点
   for (const node of nodes.value) {
-    if (draggedNode.parentNode !== node.id && node.type === "group") {
-      const isIntersecting = intersectionIds.includes(node.id);
-
-      if (isIntersecting) {
-        updateNode(node.id, {class: 'intersecting'}); // 仅为相交的 group 节点添加 intersecting 类
-        drapParentNode = node; // 保存相交的 group 节点
-        break; // 找到相交节点后立即退出循环
-      }
+    if (node.type === "group" && intersectionIds.includes(node.id)) {
+      updateNode(node.id, {class: 'intersecting'}); // 为相交的 group 节点添加 "intersecting" 类
+      dropParentNode = node; // 保存相交的 group 节点
+      break; // 只处理第一个相交节点
     }
   }
 
 }
 
-// 监听拖拽结束事件，使用 alert 显示信息
-// 监听拖拽结束事件，打印相交的节点信息
+function isValidGroupPair(node, groupNode) {
+  // 验证拖动节点与组节点的匹配有效性
+  return node.type === "default" && node.parentNode !== node.id && groupNode.type === "group";
+}
+
+// 监听拖拽结束事件
 function onNodeDragStop(event) {
   const draggedNode = event.node;
 
-  console.log(drapParentNode)
+  console.log(draggedNode);
+  console.log(dropParentNode);
+
+  // 如果没有相交节点且拖动节点有父节点，则重置其父节点
+  if (!dropParentNode) {
+    if (draggedNode.parentNode) {
+      draggedNode.parentNode = ""; // 重置为没有父节点
+    }
+    return;
+  }
+
+  // 清空相交节点的 "intersecting" 类
+  dropParentNode.class = '';
+
+  // 如果节点与组匹配有效，则将拖动节点的父节点设置为相交组节点
+  if (isValidGroupPair(draggedNode, dropParentNode)) {
+    draggedNode.parentNode = dropParentNode.id;
+  }
+
+  console.log(draggedNode);
+  console.log(dropParentNode);
 }
 // Watch for changes in 1 and save/load flow data dynamically
 watch(
@@ -263,6 +284,7 @@ function importFlowData(newFlowDataMap) {
     fromObject(savedFlowData)
   }
 }
+
 
 // our dark mode toggle flag
 const dark = ref(false)

@@ -97,6 +97,7 @@ export default function useDragAndDrop(flow_id) {
           question: "", // 默认空字符串
           description: "", // 默认空字符串
         },
+        isParent: true
       };
     } else if (draggedType.value === "default") {
       // 中间节点，包含 regex、question、description 和 action
@@ -110,6 +111,7 @@ export default function useDragAndDrop(flow_id) {
           description: "", // 默认空字符串
           action: "", // 默认空字符串
         },
+        parentNode: ''
       };
     } else if (draggedType.value === "input" || draggedType.value === "output") {
       // 开始节点和结束节点，data 为 undefined
